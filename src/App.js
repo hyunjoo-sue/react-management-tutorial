@@ -44,7 +44,7 @@ function App() {
             job={customer.job}
           />
           )
-        })
+        }) 
       }
   </div>
   );
