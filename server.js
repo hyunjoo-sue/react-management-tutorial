@@ -32,7 +32,9 @@ const upload = multer({dest: './upload'})
 
 app.get('/api/customers', (req, res) => {
   connection.query(
-    "SELECT * FROM management.customer",
+    "SELECT * \
+       FROM management.customer \
+      WHERE ISDELETED = 0",
     (err, rows, fields) => {
       res.send(rows)
     }
@@ -46,28 +48,36 @@ app.use('/image', express.static('./upload'))   // image이름으로 접근 하�
 app.post('/api/customers', upload.single('image'), (req, res) => {
   console.log(req.file.filename)
 
-  let sql = 'INSERT INTO MANAGEMENT.CUSTOMER VALUES (NULL, ?, ?, ?, ?, ?)';
+  let sql = 'INSERT INTO MANAGEMENT.CUSTOMER VALUES (NULL, ?, ?, ?, ?, ?, NOW(), 0)';
   let image = '/image/' + req.file.filename;
   let name = req.body.name;
   let birthday = req.body.birthday;
   let gender = req.body.gender;
   let job = req.body.job;
-  let parms = [image, name, birthday, gender, job];
+  let params = [image, name, birthday, gender, job];
 
-console.log(parms)
-  connection.query(sql, parms, (err, rows, fields) => {
+  connection.query(sql, params, (err, rows, fields) => {
     res.send(rows);
 
     console.log(rows)
     console.log('----end')
     test.test();
   })
-
-
-
-
-
 })
+
+app.delete('/api/customers/:id', (req, res) => {
+  let sql = 'UPDATE MANAGEMENT.CUSTOMER SET ISDELETED = 1 \
+              WHERE ID = ?';
+  console.log(req.params.id)
+  console.log(sql)
+  let params = [req.params.id];
+  connection.query(sql, params, 
+    (err, rows, fields) => {
+      res.send(rows)
+    })
+})
+
+
 
 process.on('uncaughtException', (err) => {
 
