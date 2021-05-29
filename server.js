@@ -8,8 +8,8 @@ const port = process.env.PORT || 5000;
 
 const test = require('./server/config');
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true}));
+app.use(express.urlencoded({ extended: true}));
+app.use(express.json());
 
 const data = fs.readFileSync('./database.json')
 const conf = JSON.parse(data);
